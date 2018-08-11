@@ -1,0 +1,117 @@
+.navbar{
+    background-color: #0066FF;
+}
+.navLabel{
+    color: white;
+    font-weight: 700;
+    float: left;
+}
+.containerStyle{
+    padding-top: 60px;
+    padding-bottom: 30px
+}
+.buttonLHP{
+    float: right;
+    background-color: white;
+    border-radius: 4px;
+    background-color: white;
+    color: black;
+    border: 2px solid #FF9900;
+    font-size: 62%;
+    font-weight: 500;
+    color: #FF9900;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    display: inline-block;
+}
+.buttonCenter{
+    background-color: white;
+    border-radius: 4px;
+    background-color: white;
+    color: black;
+    border: 2px solid #FF9900;
+    font-size: 62%;
+    font-weight: 500;
+    color: #FF9900;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    display: inline-block;
+}
+.buttonRHP{
+    background-color: white;
+    border-radius: 4px;
+    background-color: white;
+    color: black;
+    border: 2px solid #FF9900;
+    width: 75%;
+    font-size: 62%;
+    font-weight: 500;
+    color: #FF9900;
+    text-align: center
+}
+.labels{
+    float: left;
+    font-size: 85%;
+    font-weight: 500;
+}
+.labelsRight{
+    float: right;
+    font-size: 85%;
+    font-weight: 500;
+}
+.table-wrapper-scroll-y{display: block;
+    max-height: 200px;
+    overflow-y: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+#input_container { position:relative; padding:2%; margin:0; }
+.input { width: 105px; text-align:center;font-style: italic}
+input::-webkit-input-placeholder {
+    font-size: 10px;
+    line-height: 3;
+    
+}
+.footer{
+position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color:white;
+   height: 50px;
+   text-align: center;
+   padding: 10px;
+   box-shadow: 0px 0px 15px 2px rgba(0, 0, 0, 0.2);
+   font-size: 13px
+}
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+input.ng-invalid.ng-touched {
+    border: 1px solid red;
+  }
+ .okButton{
+    height:30px;text-align: center;
+    background-color:#FF9900;
+    border:none;width: 40px;
+ }
+ p-dialog .ui-dialog {
+    background-color: red;
+  }
+  .rhpColumn{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+  }
+  .navBarBottom{
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }

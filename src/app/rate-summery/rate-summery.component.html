@@ -1,0 +1,379 @@
+<div>
+  <div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <label class="navLabel">Rate Summery</label>
+    </nav>
+  </div>
+  <div class="container-fluid containerStyle ">
+    <div class="row">
+      <!-- LHP -->
+      <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12" style="box-shadow: 0px 0px 15px 2px rgba(0, 0, 0, 0.1);  padding-top: 30px;padding-right: 20px;">
+        <div class="container">
+          <!-- <div class="row"> -->
+          <span>
+            <div>
+              <label class="labels"> BUYING RATES</label>
+            </div>
+            <div>
+              <button class="btn btn-md buttonLHP" [disabled]="legDetails.length==0" data-toggle="modal" data-target="#copyAll">COPY ALL LEGS</button>
+            </div>
+          </span>
+          <!-- </div> -->
+        </div>
+        <div *ngIf="legDetails.length!=0">
+          <div *ngFor="let legData of legDetails ;trackBy:indexTracker">
+            <div class=" containerStyle">
+              <div>
+                <label class="labels"> {{legData.rate_card_meta.leg_name | uppercase}}</label>
+              </div>
+              <div>
+                <label class="labelsRight">TOTAL: {{legData.rate_card_obj.card_meta.currency}} {{legData.rate_card_obj.card_meta.total_cost | number
+                  :'1.0-0'}}
+                </label>
+              </div>
+            </div>
+            <div class="table-wrapper-scroll-y">
+              <table class="table table-border table-fixed">
+                <thead>
+                  <tr>
+                    <th>Charges</th>
+                    <th>Final Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let cardDetail of legData.rate_card_obj.card_charges">
+                    <td>{{cardDetail.charge_name}} {{cardDetail.container_type}}</td>
+                    <td>{{legData.rate_card_obj.card_meta.currency}} {{cardDetail.total}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <br>
+            <span style="float:right;">
+              <button class="btn btn-primary-outline " (click)="copyButtonClicked(legData)" style="background-color: transparent; color: slateblue">COPY</button>
+              <label style="color:silver">OR</label>&nbsp;
+              <span>
+                <input type="number" class="input" id="legData.rate_card_obj.card_meta.leg_name" placeholder="Enter Margin" #margin (input)="legData.margin=$event.target.value;legData.showOkError=false">
+                <button class="okButton " (click)="legData.showOkError=true; marginOk(legData,legData.margin);margin.value=''">OK</button>
+              </span>
+            </span>
+            <br>
+            <br> {{legData.margin}}
+            <div class="alert alert-danger" *ngIf="legData.margin>99">
+              <strong>Danger!</strong> Please insert 2 digits numeric value
+            </div>
+            <div class="alert alert-danger" *ngIf="legData.margin == '' && legData.showOkError">
+              <strong>Danger!</strong> Enter margin Before Copying to RHS
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+      </div>
+      <!-- LHP -->
+      <!-- RHP -->
+      <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12" style="box-shadow: 0px 0px 15px 2px rgba(0, 0, 0, 0.1); padding-top: 30px;">
+        <span class="rhpColumn">
+          <div>
+            <label class="labels"> YOUR SELLIG RATES</label>
+          </div>
+          <div>
+            <button class="btn btn-md buttonLHP" (click)="addLegForm.markAsPristine();addLegForm.markAsUntouched();" data-toggle="modal"
+              data-target="#addLeg">CREATE NEW LEG</button>
+          </div>
+          <div>
+            <button class="btn btn-md buttonLHP" [disabled]="copiedLeg.length==0" data-toggle="collapse" data-target="#collapseCharges"
+              aria-expanded="false">HIDE CHARGE DETAIL</button>
+          </div>
+        </span>
+        <div class="collapse show" id="collapseCharges" *ngIf="copiedLeg.length!=0">
+          <div *ngFor="let legData of copiedLeg; let i = index" [attr.data-index]="i">
+            <div class=" containerStyle">
+              <div>
+                <label class="labels"> {{legData.rate_card_meta.leg_name | uppercase}}</label>
+              </div>
+              <div>
+                <label class="labels labelsRight">TOTAL: {{legData.rate_card_obj.card_meta.currency}} {{legData.rate_card_obj.card_meta.total_cost | number
+                  }}
+                </label>
+              </div>
+            </div>
+            <div class="table-wrapper-scroll-y">
+              <table class="table table-border table-fixed">
+                <thead>
+                  <tr>
+                    <th>Charge</th>
+                    <th>Basis</th>
+                    <th>Amount</th>
+                    <th>Final Amount</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let cardDetail of legData.rate_card_obj.card_charges">
+                    <td>{{cardDetail.charge_name}} {{cardDetail.container_type}}</td>
+                    <td>{{cardDetail.basis}}</td>
+                    <td>{{cardDetail.charge_currency}} {{cardDetail.amount}}</td>
+                    <td>{{legData.rate_card_obj.card_meta.currency}} {{cardDetail.total}}</td>
+                    <td>
+                      <button class="btn btn-block" style="background: transparent;border: none;" (click)="editChargeForm.controls['charge_name'].setValue(cardDetail.charge_name);editChargeForm.markAsPristine();editChargeForm.markAsUntouched();"
+                        data-toggle="modal" data-target="#editCharges">
+                        <img style="height:15px; width:15px;" src="./assets/pencil-edit-button.svg" />
+                      </button>
+                    </td>
+                    <td>
+                      <button class="btn btn-block" style="background: transparent;border: none;" (click)="deleteACharge(cardDetail,i)">
+                        <img style="height:15px; width:15px;" src="./assets/rubbish-bin-delete-button.svg" />
+                      </button>
+                    </td>
+                    <!-- EditCharges Modal -->
+                    <div class="modal fade" id="editCharges" tabindex="-1" role="dialog" aria-labelledby="editChargesLabel" aria-hidden="true"
+                      style="height:100%;width:100%;">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="editChargesLabel">Edit Charges</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <form name="editChargeForm" [formGroup]="editChargeForm" novalidate (ngSubmit)="ediFormSubmit()">
+                            <div class="modal-body">
+                              <div class="form-group">
+                                <label for="charge_name">Charge Name</label>
+                                <input type="text" [attr.disabled]="true" name="charge_name" formControlName="charge_name" class="form-control" [(value)]="cardDetail.charge_name"
+                                />
+                              </div>
+                              <div class="form-group">
+                                <label for="basis">Basis</label>
+                                <input type="text" name="basis" formControlName="basis" class="form-control" />
+                              </div>
+                              <div class="form-group">
+                                <label for="container_type">Container Type</label>
+                                <input type="text" name="container_type" formControlName="container_type" class="form-control" />
+                              </div>
+                              <div class="form-group">
+                                <label for="charge_currency">Charge Currency</label>
+                                <input type="text" name="charge_currency" formControlName="charge_currency" class="form-control" />
+                              </div>
+                              <div class="form-group">
+                                <label for="amount">Amount</label>
+                                <input type="number" name="amount" formControlName="amount" class="form-control" />
+                              </div>
+                              <div class="form-group">
+                                <label for="currency">Currency</label>
+                                <input type="text" name="currency" formControlName="currency" class="form-control" />
+                              </div>
+                              <div class="form-group">
+                                <label for="total">Total</label>
+                                <input type="number" name="total" formControlName="total" class="form-control" />
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="submiit" class="btn btn-primary">Save changes</button>
+                            </div>
+                            <i data-dismiss="modal" #btnSave></i>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <br>
+            <span style="float:right;font-size: 15px;">
+              <a href="#" (click)="removeLeg(legData)">REMOVE LEG</a>&nbsp;&nbsp;
+              <a href="#" (click)="addChargesForm.controls['global_leg_id'].setValue(legData.rate_card_meta.global_leg_id);addChargesForm.controls['leg_name'].setValue(legData.rate_card_meta.leg_name);addChargesForm.markAsPristine();addChargesForm.markAsUntouched();"
+                data-toggle="modal" data-target="#addChargesModal">ADD ANOTHER CHARGE</a>
+            </span>
+            <!-- ADD Charges -->
+            <div class="modal fade" id="addChargesModal" tabindex="-1" role="dialog" aria-labelledby="addChargesLabel" aria-hidden="true"
+              style="height:100%;width:100%;">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="addChargesLabel">ADD A CHARGE</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <form name="addChargesForm" [formGroup]="addChargesForm" novalidate (ngSubmit)="addChargesFormSubmit()">
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label for="charge_name" class="formlabel">Charge Name </label>
+                        <label for="charge_name" class="formlabel" style="color: red"> *</label>
+                        <input type="text" name="charge_name" formControlName="charge_name" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'charge_name')" errorMsg="Please insert charge name"></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="description" class="formlabel">Description</label>
+                        <input type="text" name="description" formControlName="description" class="form-control" />
+                      </div>
+                      <div class="form-group">
+                        <label for="basis" class="formlabel">Basis </label>
+                        <label for="basis" class="formlabel" style="color: red"> *</label>
+                        <input type="text" name="basis" formControlName="basis" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'basis')" errorMsg="Please insert basis"></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="unit_price" class="formlabel">Unit Price </label>
+                        <label for="unit_price" class="formlabel" style="color: red"> *</label>
+                        <input type="number" name="unit_price" formControlName="unit_price" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'unit_price')" errorMsg="Please insert Unit Price"></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="quantity" class="formlabel">Quantitye</label>
+                        <input type="text" name="quantity" formControlName="quantity" class="form-control" />
+                      </div>
+                      <div class="form-group">
+                        <label for="amount" class="formlabel">Amount </label>
+                        <label for="amount" class="formlabel" style="color: red"> *</label>
+                        <input type="number" name="amount" formControlName="amount" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'amount')" errorMsg="Please insert charge amount"></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="total" class="formlabel">Total </label>
+                        <label for="total" class="formlabel" style="color: red"> *</label>
+                        <input type="number" name="total" formControlName="total" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'total')" errorMsg="Please insert total amount"></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="container_type" class="formlabel">Container Type </label>
+                        <label for="container_type" class="formlabel" style="color: red"> *</label>
+                        <input type="text" name="container_type" formControlName="container_type" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'container_type')" errorMsg="Please insert Container Type"></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="charge_currency" class="formlabel">Charge Currency </label>
+                        <label for="charge_currency" class="formlabel" style="color: red"> *</label>
+                        <input type="text" name="charge_currency" formControlName="charge_currency" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'charge_currency')" errorMsg="Please insert charge currency "></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="remark" class="formlabel">Remark</label>
+                        <input type="text" name="remark" formControlName="remark" class="form-control" />
+                      </div>
+                      <div class="form-group">
+                        <label for="charge_line" class="formlabel">Charge Line</label>
+                        <input type="text" name="charge_line" formControlName="charge_line" class="form-control" />
+                      </div>
+                      <div class="form-group">
+                        <label for="min_flag" class="formlabel">Min Flag</label>
+                        <input type="text" name="min_flag" formControlName="min_flag" class="form-control" />
+                      </div>
+                      <div class="form-group">
+                        <label for="min_amount" class="formlabel">Min Amount</label>
+                        <input type="text" name="min_amount" formControlName="min_amount" class="form-control" />
+                      </div>
+                      <div class="form-group">
+                        <label for="global_charge_id" class="formlabel">Global ChargeId </label>
+                        <label for="global_charge_id" class="formlabel" style="color: red">*</label>
+                        <input type="text" name="global_charge_id" formControlName="global_charge_id" class="form-control" />
+                        <app-error-handler [displayError]="isFieldValid(addChargesForm,'global_charge_id')" errorMsg="Please insert global charge Id "></app-error-handler>
+                      </div>
+                      <div class="form-group">
+                        <label for="global_leg_id" class="formlabel">Global LegId</label>
+                        <input [attr.disabled]="true" type="text" name="global_leg_id" formControlName="global_leg_id" class="form-control" [(value)]="legData.rate_card_meta.global_leg_id"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="leg_name" class="formlabel">Leg Name</label>
+                        <input [attr.disabled]="true" type="text" name="leg_name" formControlName="leg_name" class="form-control" [(value)]="legData.rate_card_meta.leg_name"
+                        />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary" [disabled]="!addChargesForm.valid">ADD CHARGE</button>
+                    </div>
+                    <i data-dismiss="modal" #btnADD></i>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- RHP -->
+  </div>
+  <!-- CopY All Confirm POpup -->
+  <div class="modal fade" id="copyAll" tabindex="-1" role="dialog" aria-labelledby="copyAllLabel" aria-hidden="true" style="height:100%;width:100%;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="copyAllLabel"> Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are sure to copy all the legs?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+          <button type="submiit" class="btn btn-primary" (click)="copyAll();">Copy</button>
+        </div>
+        <i data-dismiss="modal" #btncopy></i>
+      </div>
+    </div>
+  </div>
+  <!-- <fotter> -->
+  <footer class="footer">
+    <span class="rhpColumn">
+      <div>
+        TOTAL BUY RATE
+        <br>
+        <strong> GHS {{totalAmout | number :'1.0-0'}}</strong>
+      </div>
+      <div>
+        TOTAL BREAK-UP RATE
+        <br>
+        <strong> GHS {{breakUpRate | number :'1.0-0' }}</strong>
+      </div>
+      <div>
+        PROFIT PERCENTAGE
+        <br>
+        <strong> 0%</strong>
+      </div>
+    </span>
+  </footer>
+</div>
+<!-- CopY All Confirm POpup -->
+<!-- Create Leg -->
+<div class="modal fade show" id="addLeg" tabindex="-1" role="dialog" aria-labelledby="addLegLabel" aria-hidden="true" style="height:100%;width:100%;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addLegLabel">Add Leg</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form name="addLegForm" [formGroup]="addLegForm" novalidate (ngSubmit)="addLegFormSubmit()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="leg_name">Leg Name</label>
+            <label for="leg_name" style="color: red">*</label>
+            <input type="text" name="leg_name" formControlName="leg_name" class="form-control" />
+            <app-error-handler [displayError]="isFieldValid(addLegForm,'leg_name')" errorMsg="Please insert Leg name"></app-error-handler>
+          </div>
+          <div class="form-group">
+            <label for="charge_name">Charge Name</label>
+            <label for="charge_name" style="color: red">*</label>
+            <input type="text" name="charge_name" formControlName="charge_name" class="form-control" />
+            <app-error-handler [displayError]="isFieldValid(addLegForm,'charge_name')" errorMsg="Please insert Charge name"></app-error-handler>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submiit" class="btn btn-primary">Create Leg</button>
+        </div>
+        <i data-dismiss="modal" #btncreate></i>
+      </form>
+    </div>
+  </div>
+  <!-- Create Leg -->
